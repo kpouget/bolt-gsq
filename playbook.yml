@@ -1,0 +1,246 @@
+# dnf install --quiet -y ansible # 2.9.1
+# ansible-playbook ./playbook.yml --check  -i root@vps.groupe-speleo-quercy.fr, --become-user root
+
+# ansible-galaxy collection install ansible.posix
+# ansible-galaxy collection install community.general
+
+- name: Setup the GSQ server for running MicroShift
+  connection: local
+  gather_facts: False
+  hosts: [localhost]
+
+  tasks:
+
+  - name: Define system properties
+    set_fact:
+      node_domain: groupe-speleo-quercy.fr
+      node_hostname: vps.groupe-speleo-quercy.fr
+      node_ip: 45.155.171.202
+      admin_user: admin
+      sshd_port: 2200
+
+  - name: Define constant values
+    set_fact:
+      microshift_containerized_service_url: https://raw.githubusercontent.com/redhat-et/microshift/main/packaging/systemd/microshift-containerized.service
+      openshift_client_linux_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
+
+  # Configure the system
+
+  - name: Configure the hostname
+    ansible.builtin.hostname:
+      name: "{{ node_hostname }}"
+
+  - name: Configure the timezone
+    ansible.builtin.file:
+      src: ../usr/share/zoneinfo/Europe/Paris
+      dest: /etc/localtime
+      owner: root
+      group: root
+      state: link
+
+  # ---
+
+  # Configure SSHD
+
+  - name: "Configure SSHD on port {{ sshd_port }}"
+    copy:
+      dest: "/etc/ssh/sshd_config.d/port{{ sshd_port }}.conf"
+      mode: 0600
+      content: |
+        Port {{ sshd_port }}
+
+  - name: Disable SSHD port 22 on the firewall
+    ansible.posix.firewalld:
+      zone: FedoraServer
+      port: 22/tcp
+      permanent: yes
+      state: disabled
+
+  - name: "Open SSHD port {{ sshd_port }} on the firewall"
+    ansible.posix.firewalld:
+      zone: FedoraServer
+      port: "{{ sshd_port }}/tcp"
+      permanent: yes
+      state: enabled
+
+  - name: "Allow SSHD to listen on port {{ sshd_port }}"
+    community.general.seport:
+      ports: "{{ sshd_port }}"
+      proto: tcp
+      setype: ssh_port_t
+      state: present
+
+  # ---
+
+  # Enable the Firewalld
+
+  # https://docs.ansible.com/ansible/latest/collections/ansible/posix/firewalld_module.html
+
+  - name: Make sure firewall is installed
+    ansible.builtin.package:
+      name: firewalld
+      state: present
+
+  - name: Make sure firewalld is running
+    ansible.builtin.systemd:
+      name: firewalld
+      enabled: true
+      state: started
+
+  - name: Allow Cockpit
+    ansible.posix.firewalld:
+      zone: FedoraServer
+      service: https
+      permanent: yes
+      state: enabled
+
+  # ---
+
+  # system dashboard with performance metrics history
+
+  - name: Install cockpit and cockpit-pcp
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: present
+    loop:
+    - cockpit
+    - cockpit-pcp # metrics history
+    - conntrack # ?
+
+  - name: Make sure cockpit and pmlogger are running
+    ansible.builtin.systemd:
+      name: "{{ item }}"
+      enabled: true
+      state: started
+    loop:
+    - pmlogger
+    - cockpit
+
+  # ---
+
+  ### Install MicroShift
+  # https://microshift.io/docs/getting-started/
+
+  # install crio
+
+  - name: Make sure that the cri-o module is enabled
+    command: dnf module enable -y cri-o:1.21
+
+  - name: Install cri-o and podman
+    ansible.builtin.package:
+      name: "{{item}}"
+      state: present
+    loop:
+    - cri-o
+    - cri-tools
+    - podman
+
+  - name: Make sure crio is running
+    ansible.builtin.systemd:
+      name: crio
+      enabled: true
+      state: started
+
+  # configure the firewall
+
+  - name: Allow HTTP, HTTPS and DHCPv6
+    ansible.posix.firewalld:
+      zone: FedoraServer
+      service: "{{ item }}"
+      permanent: yes
+      state: enabled
+    loop:
+    - http
+    - https
+    - dhcpv6-client
+
+  - name: Allow Kubernetes API and Kubernetes DNS
+    ansible.posix.firewalld:
+      zone: FedoraServer
+      port: "{{ item }}"
+      permanent: yes
+      state: enabled
+    loop:
+    - 6443/tcp # Kubernetes API
+    - 5353/udp # Kubernetes DNS
+
+
+  # configure microshift
+  # https://github.com/redhat-et/microshift/blob/main/test/config.yaml
+
+  - name: Configure MicroShift
+    copy:
+      dest: /etc/microshift/config.yaml
+      mode: 0600
+      content: |
+        ---
+        nodeIP: "{{ node_ip }}"
+        cluster:
+          url: "https://{{ node_hostname }}:6443"
+
+  # setup microshift service
+
+  - name: Download microshift-containerized.service
+    get_url:
+      url: "{{ microshift_containerized_service_url }}"
+      dest: /etc/systemd/system/microshift.service
+      mode: '0440'
+
+  # launch microshift
+
+  - name: Make sure Microshift is running
+    ansible.builtin.systemd:
+      name: microshift
+      enabled: true
+      state: started
+
+  # prepare oc client
+
+  - name: Download the OpenShift client tarball
+    get_url:
+      url: "{{ openshift_client_linux_url }}"
+      dest: /tmp/openshift-client-linux.tar.gz
+      mode: '0440'
+
+  - name: Extract openshift client
+    command: tar -xf /tmp/openshift-client-linux.tar.gz -C /usr/local/bin oc
+    args:
+      creates: /usr/local/bin/oc
+
+  - name: Extract kubernetes client
+    command: tar -xf /tmp/openshift-client-linux.tar.gz -C /usr/local/bin kubectl
+    args:
+      creates: /usr/local/bin/kubectl
+
+  - name: Remove the OpenShift client tarball
+    ansible.builtin.file:
+      path: /tmp/openshift-client-linux.tar.gz
+      state: absent
+
+  # prepare kubeconfig
+
+  - name: Extract KubeConfig from Podman volume
+    command: podman cp microshift:/var/lib/microshift/resources/kubeadmin/kubeconfig /tmp/kubeconfig
+    args:
+      creates: /tmp/kubeconfig
+
+  - name: Copy Kubeconfig to the admin home
+    ansible.builtin.copy:
+      remote_src: yes
+      src: /tmp/kubeconfig
+      dest: "/home/{{ admin_user }}/.kube/config"
+      owner: "{{ admin_user }}"
+      group: "{{ admin_user }}"
+      mode: u=rw,g=,o=
+
+  - name: Delete the temporary Kubeconfig file
+    ansible.builtin.file:
+      path: /tmp/kubeconfig
+      state: absent
+
+  # ---
+
+  - name: Reload the firewalld service
+    systemd:
+      name: firewalld
+      state: reloaded

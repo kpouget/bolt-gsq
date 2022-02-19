@@ -15,8 +15,8 @@ data:
   ADMIN_NAME: "Admin account"
 
   BOLT_CONFIG_REPO: "https://github.com/kpouget/bolt-gsq-k8s.git"
-  BOLT_CONFIG_REPO_REF: config
+  BOLT_CONFIG_REPO_REF: bolt/config
 
   BOLT_THEME_REPO: "https://github.com/kpouget/bolt-gsq-k8s.git"
-  BOLT_THEME_REPO_REF: theme
+  BOLT_THEME_REPO_REF: bolt/theme
   BOLT_THEME_NAME: theme-gsq-solid-state

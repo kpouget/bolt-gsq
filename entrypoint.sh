@@ -20,7 +20,16 @@ set -o nounset
 
 export DATABASE_URL=$DATABASE_DRIVER://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME
 
-echo "DATABASE_URL=$DATABASE_URL" >> /etc/environment
+sed -i 's/^\(APP_ENV\)=.*$/\1='$APP_ENV'/' .env
+
+echo "APP_DEBUG=$APP_DEBUG" >> .env.${APP_ENV}.local
+cat <<EOF > .env.${APP_ENV}.local
+ADD_DEBUG=${APP_DEBUG}
+APP_SECRET=${APP_SECRET}
+
+DATABASE_URL=${DATABASE_URL}
+EOF
+
 
 if ! bin/console bolt:list-users 2>/dev/null; then
     echo "No user configured. Create the database."

@@ -28,7 +28,6 @@ if ! bin/console bolt:list-users 2>/dev/null; then
     bin/console doctrine:schema:create
 
     bin/console bolt:add-user --admin "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_EMAIL" "$ADMIN_NAME"
-    bin/console doctrine:fixtures:load
 else
     echo "User accounts already setup."
 fi

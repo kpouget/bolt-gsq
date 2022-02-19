@@ -1,0 +1,179 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: website
+  name: website
+  namespace: website
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: website
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+      - name: cnt
+        # push to git@github.com:kpouget/boltcms-ubi.git
+        # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
+        image: quay.io/kpouget/boltcms-ubi@sha256:32b98681b86118b020f22947c03fe1168b61e1480935226af27bb0877eac344c
+        securityContext:
+          privileged: true
+        env:
+        # ---
+        - name: SERVER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: SERVER_NAME
+
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: TZ
+
+        # ---
+
+        - name: ADMIN_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: ADMIN_USERNAME
+
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bolt
+              key: ADMIN_PASSWORD
+
+        - name: ADMIN_EMAIL
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: ADMIN_EMAIL
+
+        - name: ADMIN_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: ADMIN_NAME
+        # ---
+
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: APP_ENV
+
+        - name: APP_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: APP_DEBUG
+
+        - name: APP_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: bolt
+              key: APP_SECRET
+
+        # ---
+        - name: DATABASE_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_DRIVER
+
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_HOST
+
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_USER
+
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DATABASE_PASSWORD
+
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_NAME
+
+        # ---
+
+        - name: BOLT_CONFIG_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_CONFIG_REPO
+
+        - name: BOLT_CONFIG_REPO_REF
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_CONFIG_REPO_REF
+
+        # ---
+
+        - name: BOLT_THEME_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_THEME_REPO
+
+        - name: BOLT_THEME_REPO_REF
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_THEME_REPO_REF
+
+        - name: BOLT_THEME_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_THEME_NAME
+
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+        volumeMounts:
+        - mountPath: /opt/app-root/src/app-src/public/files
+          name: files
+        - mountPath: /opt/app-root/src/app-src/public/thumbs
+          name: thumbs
+        - mountPath: /opt/app-root/src/app-src/var
+          name: var
+      restartPolicy: Always
+      volumes:
+        - name: files
+          hostPath:
+            path: "/data/website/bolt/files"
+            type: DirectoryOrCreate
+        - name: thumbs
+          hostPath:
+            path: "/data/website/bolt/thumbs"
+            type: DirectoryOrCreate
+        - name: var
+          hostPath:
+            path: "/data/website/bolt/var"
+            type: DirectoryOrCreate

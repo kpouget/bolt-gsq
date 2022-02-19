@@ -1,0 +1,10 @@
+DB_POD_NAME=$(oc get pods -lapp=db -ojsonpath={.items[0].metadata.name})
+FILENAME=~/Downloads/bolt_gsq.sql
+
+oc cp "$FILENAME" $DB_POD_NAME:/tmp/db.sql
+oc rsh $DB_POD_NAME bash -c "mysql -u bolt-gsq -p bolt-gsq < /tmp/db.sql"
+oc rsh $DB_POD_NAME bash -c "mysql -u bolt-gsq -p bolt-gsq -e 'SHOW tables;'"
+oc rsh $DB_POD_NAME bash -c "mysql -u bolt-gsq -p bolt-gsq -e 'SELECT * FROM bolt_user;'"
+
+BOLT_POD_NAME=$(oc get pods -lapp=website -ojsonpath={.items[0].metadata.name})
+oc rsh "$BOLT_POD_NAME" bash -c "cd public/files && git clone https://lab.0x972.info/gsq/files.git ."

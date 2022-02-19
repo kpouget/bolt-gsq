@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: website
+  namespace: website
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  host: gsq.groupe-speleo-quercy.fr
+  to:
+    kind: Service
+    name: website

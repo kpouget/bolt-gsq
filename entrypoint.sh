@@ -20,6 +20,8 @@ set -o nounset
 
 export DATABASE_URL=$DATABASE_DRIVER://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME
 
+echo "DATABASE_URL=$DATABASE_URL" >> /etc/environment
+
 if ! bin/console bolt:list-users 2>/dev/null; then
     echo "No user configured. Create the database."
 

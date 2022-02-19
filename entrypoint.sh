@@ -1,5 +1,9 @@
 #! /bin/bash
 
+set -o errexit
+set -o pipefail
+set -o nounset
+
 [[ -z "${ADMIN_USERNAME:-}" ]] && echo "ADMIN_USERNAME missing"
 [[ -z "${ADMIN_NAME:-}" ]] && echo "ADMIN_NAME missing"
 [[ -z "${ADMIN_PASSWORD:-}" ]] && echo "ADMIN_PASSWORD missing"

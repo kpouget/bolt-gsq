@@ -54,7 +54,8 @@ spec:
               key: MYSQL_PASSWORD
         - name: MYSQL_USER
           value: nextcloud
-        image: docker.io/library/nextcloud@sha256:5b97169f2f986237472b0a0da84bab98b199cc36439e29f9a9b56d17343b50b4
+        image: docker.io/library/nextcloud@sha256:9c2e3eda26a7874264ee11427e12189606b89e3cf2b59d5b9f9c8038355e0078
+
         ports:
         - containerPort: 80
           protocol: TCP

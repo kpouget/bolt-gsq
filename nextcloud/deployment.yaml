@@ -44,9 +44,7 @@ spec:
 
         - name: MYSQL_DATABASE
           value: nextcloud
-        # See on standard cluster.local domain in microshift breaks
-        # internal cluster DNS.
-        # https://github.com/redhat-et/microshift/issues/563
+
         - name: MYSQL_HOST
           value: nextcloud-db.nextcloud.svc:3306
         - name: MYSQL_PASSWORD

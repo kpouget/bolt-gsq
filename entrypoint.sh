@@ -23,7 +23,6 @@ export DATABASE_URL=$DATABASE_DRIVER://$DATABASE_USER:$DATABASE_PASSWORD@$DATABA
 if ! bin/console bolt:list-users 2>/dev/null; then
     echo "No user configured. Create the database."
 
-    bin/console doctrine:database:create
     bin/console doctrine:schema:create
 
     bin/console bolt:add-user --admin "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_EMAIL" "$ADMIN_NAME"

@@ -12,7 +12,9 @@
 [[ -z "${DATABASE_USER:-}" ]] && echo "DATABASE_USER missing"
 [[ -z "${DATABASE_PASSWORD:-}" ]] && echo "DATABASE_PASSWORD missing"
 [[ -z "${DATABASE_NAME:-}" ]] && echo "DATABASE_NAME missing"
+[[ -z "${DATABASE_DRIVER:-}" ]] && echo "DATABASE_DRIVER missing"
 
+export DATABASE_URL=$DATABASE_DRIVER://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME
 
 if ! bin/console bolt:list-users 2>/dev/null; then
     echo "No user configured. Create the database."

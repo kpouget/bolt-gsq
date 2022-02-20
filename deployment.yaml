@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nc
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nc
+  template:
+    metadata:
+      labels:
+        app: nc
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: nc
+        image: docker.io/library/nextcloud@sha256:9c2e3eda26a7874264ee11427e12189606b89e3cf2b59d5b9f9c8038355e0078
+        securityContext:
+          privileged: true
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: TZ
+        - name: DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: DEBUG
+
+        # ---
+
+        - name: NEXTCLOUD_URL
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: NEXTCLOUD_URL
+        - name: NEXTCLOUD_ADMIN_USER
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: NEXTCLOUD_ADMIN_USER
+        - name: NEXTCLOUD_TRUSTED_DOMAINS
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: NEXTCLOUD_TRUSTED_DOMAINS
+        - name: NEXTCLOUD_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud
+              key: NEXTCLOUD_ADMIN_PASSWORD
+        - name: NEXTCLOUD_UPLOAD_MAX_FILESIZE
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: NEXTCLOUD_UPLOAD_MAX_FILESIZE
+        - name: NEXTCLOUD_MAX_FILE_UPLOADS
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud
+              key: NEXTCLOUD_MAX_FILE_UPLOADS
+
+        # ---
+
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_DATABASE
+        - name: MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_HOST
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: MYSQL_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_USER
+
+        # ---
+
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: html
+        - mountPath: /var/www/html/data
+          name: data
+      #
+      # Database container 
+      #
+
+      - name: db
+        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
+        securityContext:
+          privileged: true
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_DATABASE
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: MYSQL_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_USER
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: MYSQL_ROOT_PASSWORD
+        args: 
+        - --transaction-isolation=READ-COMMITTED
+        - --binlog-format=ROW
+        - --log-bin=mysqld-bin
+        - --skip-innodb-read-only-compressed
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db
+      volumes:
+      - name: data
+        hostPath:
+          path: "/data/nextcloud/data"
+          type: DirectoryOrCreate
+      - name: html
+        hostPath:
+          path: "/data/nextcloud/html"
+          type: DirectoryOrCreate
+      - name: db
+        hostPath:
+          path: "/data/nextcloud/db"
+          type: DirectoryOrCreate

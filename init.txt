@@ -1,0 +1,33 @@
+ssh admin@45.155.171.202
+
+#
+# if DNS doesn't work (ping www.google.fr)
+#
+
+UUID=$(nmcli con show | grep ethernet | awk '{ printf $2}')
+
+nmcli con mod $UUID ipv4.dns "8.8.8.8 8.8.4.4"
+
+reboot 
+# or from the VNC terminal
+nmcli con down $UUID
+nmcli con up $UUID
+
+#
+# configure the server with playbook.yml
+#
+
+scp playbook.yml admin@45.155.171.202:
+
+# as root
+
+dnf install -y ansible
+ansible-galaxy collection install ansible.posix
+ansible-galaxy collection install community.general
+
+ansible-playbook ./playbook.yml -i localhost, [--check] [--start-at-task "..."]
+
+#
+# don't forget to log out of the VNC window if you used it
+# 
+

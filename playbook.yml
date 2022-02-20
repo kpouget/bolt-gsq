@@ -1,30 +1,20 @@
-# dnf install --quiet -y ansible # 2.9.1
-# ansible-playbook ./playbook.yml --check  -i root@vps.groupe-speleo-quercy.fr, --become-user root
-
-# ansible-galaxy collection install ansible.posix
-# ansible-galaxy collection install community.general
-
 - name: Setup the GSQ server for running MicroShift
   connection: local
   gather_facts: False
   hosts: [localhost]
+  vars:
+    # System properties
+    node_domain: groupe-speleo-quercy.fr
+    node_hostname: vps.groupe-speleo-quercy.fr
+    node_ip: 45.155.171.202
+    admin_user: admin
+    sshd_port: 2200
+    firewall_zone: public
 
+    # Constant values
+    microshift_containerized_service_url: https://raw.githubusercontent.com/redhat-et/microshift/main/packaging/systemd/microshift-containerized.service
+    openshift_client_linux_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
   tasks:
-
-  - name: Define system properties
-    set_fact:
-      node_domain: groupe-speleo-quercy.fr
-      node_hostname: vps.groupe-speleo-quercy.fr
-      node_ip: 45.155.171.202
-      admin_user: admin
-      sshd_port: 2200
-
-  - name: Define constant values
-    set_fact:
-      microshift_containerized_service_url: https://raw.githubusercontent.com/redhat-et/microshift/main/packaging/systemd/microshift-containerized.service
-      openshift_client_linux_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
-
-  # Configure the system
 
   - name: Configure the hostname
     ansible.builtin.hostname:
@@ -51,17 +41,19 @@
 
   - name: Disable SSHD port 22 on the firewall
     ansible.posix.firewalld:
-      zone: FedoraServer
+      zone: "{{ firewall_zone }}"
       port: 22/tcp
       permanent: yes
       state: disabled
+      immediate: false
 
   - name: "Open SSHD port {{ sshd_port }} on the firewall"
     ansible.posix.firewalld:
-      zone: FedoraServer
+      zone: "{{ firewall_zone }}"
       port: "{{ sshd_port }}/tcp"
       permanent: yes
       state: enabled
+      immediate: true
 
   - name: "Allow SSHD to listen on port {{ sshd_port }}"
     community.general.seport:
@@ -87,13 +79,13 @@
       enabled: true
       state: started
 
-  - name: Allow Cockpit
+  - name: Allow Cockpit in the firewall
     ansible.posix.firewalld:
-      zone: FedoraServer
-      service: https
+      zone: "{{ firewall_zone }}"
+      service: cockpit
       permanent: yes
       state: enabled
-
+      immediate: true
   # ---
 
   # system dashboard with performance metrics history
@@ -125,6 +117,8 @@
 
   - name: Make sure that the cri-o module is enabled
     command: dnf module enable -y cri-o:1.21
+    args:
+      warn: false # modules cannot be enabled with the 'dnf'module
 
   - name: Install cri-o and podman
     ansible.builtin.package:
@@ -145,10 +139,11 @@
 
   - name: Allow HTTP, HTTPS and DHCPv6
     ansible.posix.firewalld:
-      zone: FedoraServer
+      zone: "{{ firewall_zone }}"
       service: "{{ item }}"
       permanent: yes
       state: enabled
+      immediate: true
     loop:
     - http
     - https
@@ -156,10 +151,11 @@
 
   - name: Allow Kubernetes API and Kubernetes DNS
     ansible.posix.firewalld:
-      zone: FedoraServer
+      zone: "{{ firewall_zone }}"
       port: "{{ item }}"
       permanent: yes
       state: enabled
+      immediate: true
     loop:
     - 6443/tcp # Kubernetes API
     - 5353/udp # Kubernetes DNS
@@ -167,6 +163,11 @@
 
   # configure microshift
   # https://github.com/redhat-et/microshift/blob/main/test/config.yaml
+
+  - name: Create MicroShift config directory
+    file:
+      path: /etc/microshift
+      state: directory
 
   - name: Configure MicroShift
     copy:
@@ -223,6 +224,13 @@
     command: podman cp microshift:/var/lib/microshift/resources/kubeadmin/kubeconfig /tmp/kubeconfig
     args:
       creates: /tmp/kubeconfig
+
+  - name: Create the admin .kube directory
+    file:
+      path: /home/{{ admin_user }}/.kube
+      state: directory
+      owner: "{{ admin_user }}"
+      group: "{{ admin_user }}"
 
   - name: Copy Kubeconfig to the admin home
     ansible.builtin.copy:

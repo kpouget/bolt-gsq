@@ -20,3 +20,15 @@ data:
   BOLT_THEME_REPO: "https://github.com/kpouget/bolt-gsq-k8s.git"
   BOLT_THEME_REPO_REF: bolt/theme
   BOLT_THEME_NAME: theme-gsq-solid-state
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db
+  namespace: website
+data:
+  DATABASE_DRIVER: mysql
+  # don't use 'localhost': "A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost."
+  DATABASE_HOST: 127.0.0.1:3306
+  DATABASE_NAME: bolt-gsq
+  DATABASE_USER: bolt-gsq

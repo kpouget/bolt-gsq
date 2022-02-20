@@ -163,17 +163,61 @@ spec:
           name: thumbs
         - mountPath: /opt/app-root/src/app-src/var
           name: var
+      #
+      # Database container
+      #
+
+      - name: db
+        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
+        args: 
+        - --transaction-isolation=READ-COMMITTED
+        - --binlog-format=ROW
+        - --log-bin=mysqld-bin-
+        - --skip-innodb-read-only-compressed
+        securityContext:
+          privileged: true
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_NAME
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DATABASE_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_USER
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DATABASE_ROOT_PASSWORD
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db
       restartPolicy: Always
       volumes:
-        - name: files
-          hostPath:
-            path: "/data/website/bolt/files"
-            type: DirectoryOrCreate
-        - name: thumbs
-          hostPath:
-            path: "/data/website/bolt/thumbs"
-            type: DirectoryOrCreate
-        - name: var
-          hostPath:
-            path: "/data/website/bolt/var"
-            type: DirectoryOrCreate
+      - name: files
+        hostPath:
+          path: "/data/website/bolt/files"
+          type: DirectoryOrCreate
+      - name: thumbs
+        hostPath:
+          path: "/data/website/bolt/thumbs"
+          type: DirectoryOrCreate
+      - name: var
+        hostPath:
+          path: "/data/website/bolt/var"
+          type: DirectoryOrCreate
+      - name: db
+        hostPath:
+          path: "/data/website/db"
+          type: DirectoryOrCreate

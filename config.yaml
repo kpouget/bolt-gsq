@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: bolt
-  namespace: website
+  namespace: website-bolt
 data:
   SERVER_NAME: gsq.groupe-speleo-quercy.fr
   TZ: Europe/Paris
@@ -14,10 +14,10 @@ data:
   ADMIN_EMAIL: webmaster@groupe-speleo-quercy.fr
   ADMIN_NAME: "Admin account"
 
-  BOLT_CONFIG_REPO: "https://github.com/kpouget/bolt-gsq-k8s.git"
+  BOLT_CONFIG_REPO: "https://github.com/kpouget/gsq-k8s.git"
   BOLT_CONFIG_REPO_REF: bolt/config
 
-  BOLT_THEME_REPO: "https://github.com/kpouget/bolt-gsq-k8s.git"
+  BOLT_THEME_REPO: "https://github.com/kpouget/gsq-k8s.git"
   BOLT_THEME_REPO_REF: bolt/theme
   BOLT_THEME_NAME: theme-gsq-solid-state
 ---
@@ -25,7 +25,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: db
-  namespace: website
+  namespace: website-bolt
 data:
   DATABASE_DRIVER: mysql
   # don't use 'localhost': "A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost."

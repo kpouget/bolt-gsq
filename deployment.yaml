@@ -4,7 +4,7 @@ metadata:
   labels:
     app: website
   name: website
-  namespace: website
+  namespace: website-bolt
 spec:
   replicas: 1
   strategy:

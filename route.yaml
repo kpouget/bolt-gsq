@@ -2,7 +2,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: website
-  namespace: website
+  namespace: website-bolt
   annotations:
     kubernetes.io/tls-acme: "true"
 spec:

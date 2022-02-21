@@ -10,3 +10,14 @@ oc rsh -c db $POD_NAME bash -c "mysql -u bolt-gsq -p$PASS bolt-gsq -e 'SHOW tabl
 oc rsh -c db $POD_NAME bash -c "mysql -u bolt-gsq -p$PASS bolt-gsq -e 'SELECT * FROM bolt_user;'"
 
 oc rsh -c cnt "$POD_NAME" bash -c "cd public/files && git clone https://lab.0x972.info/gsq/files.git ."
+
+# login:pass:Firstname Lastname:mail@addr.ess
+
+while read line; do
+  user=$(echo "$line" | cut -d: -f1)
+  pass=$(echo "$line" | cut -d: -f2)
+  name=$(echo "$line" | cut -d: -f3)
+  mail=$(echo "$line" | cut -d: -f4)
+  bin/console bolt:delete-user "$user"
+  bin/console bolt:add-user --admin "$user" "$pass" "$mail" "$name"
+done < users

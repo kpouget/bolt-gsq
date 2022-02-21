@@ -24,7 +24,7 @@ sed -i 's/^\(APP_ENV\)=.*$/\1='$APP_ENV'/' .env
 
 echo "APP_DEBUG=$APP_DEBUG" >> .env.${APP_ENV}.local
 cat <<EOF > .env.${APP_ENV}.local
-ADD_DEBUG=${APP_DEBUG}
+APP_DEBUG=${APP_DEBUG}
 APP_SECRET=${APP_SECRET}
 
 DATABASE_URL=${DATABASE_URL}

@@ -22,6 +22,11 @@ spec:
         # push to git@github.com:kpouget/boltcms-ubi.git
         # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
         image: quay.io/kpouget/boltcms-ubi@sha256:32b98681b86118b020f22947c03fe1168b61e1480935226af27bb0877eac344c
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
         securityContext:
           privileged: true
         env:
@@ -169,10 +174,15 @@ spec:
 
       - name: db
         image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
-        args: 
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
+        args:
         - --transaction-isolation=READ-COMMITTED
         - --binlog-format=ROW
-        - --log-bin=mysqld-bin-
+        - --log-bin=mysqld-bin
         - --skip-innodb-read-only-compressed
         securityContext:
           privileged: true

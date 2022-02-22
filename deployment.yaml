@@ -102,7 +102,7 @@ spec:
         - mountPath: /var/www/html/data
           name: data
       #
-      # Database container 
+      # Database container
       #
 
       - name: db
@@ -130,7 +130,7 @@ spec:
             secretKeyRef:
               name: db
               key: MYSQL_ROOT_PASSWORD
-        args: 
+        args:
         - --transaction-isolation=READ-COMMITTED
         - --binlog-format=ROW
         - --log-bin=mysqld-bin

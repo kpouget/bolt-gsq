@@ -21,6 +21,11 @@ spec:
       containers:
       - name: nc
         image: docker.io/library/nextcloud@sha256:9c2e3eda26a7874264ee11427e12189606b89e3cf2b59d5b9f9c8038355e0078
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
         securityContext:
           privileged: true
         env:
@@ -107,6 +112,11 @@ spec:
 
       - name: db
         image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
         securityContext:
           privileged: true
         env:

@@ -159,8 +159,8 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 10
         volumeMounts:
         - mountPath: /opt/app-root/src/app-src/public/files
           name: files

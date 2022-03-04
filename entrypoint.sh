@@ -46,6 +46,7 @@ if [[ "$config_count" == 0 ]]; then
     fi
 else
     echo "Config directory is already populated."
+    (cd config; git show --quiet 2>/dev/null || true)
 fi
 
 [[ -z "BOLT_THEME_NAME" ]] && BOLT_THEME_NAME="theme"
@@ -63,6 +64,7 @@ if [[ "$theme_count" == 0 ]]; then
     fi
 else
     echo "Theme directory is already populated."
+    (cd "$theme_dir"; git show --quiet 2>/dev/null || true)
 fi
 
 if ! bin/console bolt:list-users 2>/dev/null; then

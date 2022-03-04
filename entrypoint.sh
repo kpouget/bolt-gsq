@@ -31,16 +31,6 @@ DATABASE_URL=${DATABASE_URL}
 EOF
 
 
-if ! bin/console bolt:list-users 2>/dev/null; then
-    echo "No user configured. Create the database."
-
-    bin/console doctrine:schema:create
-
-    bin/console bolt:add-user --admin "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_EMAIL" "$ADMIN_NAME"
-else
-    echo "User accounts already setup."
-fi
-
 mkdir -p config
 config_count="$(find config -mindepth 1 -maxdepth 1 | wc -l)"
 if [[ "$config_count" == 0 ]]; then
@@ -73,6 +63,16 @@ if [[ "$theme_count" == 0 ]]; then
     fi
 else
     echo "Theme directory is already populated."
+fi
+
+if ! bin/console bolt:list-users 2>/dev/null; then
+    echo "No user configured. Create the database."
+
+    bin/console doctrine:schema:create
+
+    bin/console bolt:add-user --admin "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_EMAIL" "$ADMIN_NAME"
+else
+    echo "User accounts already setup."
 fi
 
 if [[ "${SERVER_NAME:-}" ]]; then

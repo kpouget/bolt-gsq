@@ -57,7 +57,7 @@ if [[ "$theme_count" == 0 ]]; then
     if [[ "${BOLT_THEME_REPO:-}" ]]; then
         [[ -z "BOLT_THEME_REPO_REF" ]] && BOLT_THEME_REPO_REF=master
 
-        (cd "$dest"; git clone "$BOLT_THEME_REPO" -b "$BOLT_THEME_REPO_REF" .)
+        (cd "$theme_dir"; git clone "$BOLT_THEME_REPO" -b "$BOLT_THEME_REPO_REF" .)
     else
         echo "BOLT_CONFIG_REPO not defined."
     fi

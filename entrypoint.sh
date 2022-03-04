@@ -81,4 +81,6 @@ fi
 
 echo "Done with the configuration."
 
-php-fpm & httpd -D FOREGROUND
+php-fpm &
+
+exec httpd -D FOREGROUND

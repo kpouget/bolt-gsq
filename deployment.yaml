@@ -162,6 +162,10 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 10
         volumeMounts:
+        - mountPath: /opt/app-root/src/app-src/config
+          name: config
+        - mountPath: /opt/app-root/src/app-src/public/theme/theme-gsq-solid-state
+          name: theme
         - mountPath: /opt/app-root/src/app-src/public/files
           name: files
         - mountPath: /opt/app-root/src/app-src/public/thumbs
@@ -215,6 +219,14 @@ spec:
           name: db
       restartPolicy: Always
       volumes:
+      - name: config
+        hostPath:
+          path: "/data/website/bolt/config"
+          type: DirectoryOrCreate
+      - name: theme
+        hostPath:
+          path: "/data/website/bolt/theme"
+          type: DirectoryOrCreate
       - name: files
         hostPath:
           path: "/data/website/bolt/files"

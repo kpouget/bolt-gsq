@@ -41,28 +41,38 @@ else
     echo "User accounts already setup."
 fi
 
+mkdir -p config
+config_count="$(find config -mindepth 1 -maxdepth 1 | wc -l)"
+if [[ "$config_count" == 0 ]]; then
+    echo "Config directory is empty."
 
-if [[ "${BOLT_CONFIG_REPO:-}" ]]; then
-    [[ -z "BOLT_CONFIG_REPO_REF" ]] && BOLT_CONFIG_REPO_REF=master
+    if [[ "${BOLT_CONFIG_REPO:-}" ]]; then
+        [[ -z "BOLT_CONFIG_REPO_REF" ]] && BOLT_CONFIG_REPO_REF=master
 
-    rm -rf config
-    git clone "$BOLT_CONFIG_REPO" -b "$BOLT_CONFIG_REPO_REF" --depth 1 config
-    rm -rf config/.git
+        (cd config; git clone "$BOLT_CONFIG_REPO" -b "$BOLT_CONFIG_REPO_REF" .)
+
+    else
+        echo "BOLT_CONFIG_REPO not defined."
+    fi
 else
-    echo "BOLT_CONFIG_REPO not defined."
+    echo "Config directory is already populated."
 fi
 
+[[ -z "BOLT_THEME_NAME" ]] && BOLT_THEME_NAME="theme"
+theme_dir=public/theme/$BOLT_THEME_NAME
+mkdir -p "$theme_dir"
+theme_count="$(find "${theme_dir}" -mindepth 1 -maxdepth 1 | wc -l)"
+if [[ "$theme_count" == 0 ]]; then
+    echo "Theme directory is empty."
+    if [[ "${BOLT_THEME_REPO:-}" ]]; then
+        [[ -z "BOLT_THEME_REPO_REF" ]] && BOLT_THEME_REPO_REF=master
 
-if [[ "${BOLT_THEME_REPO:-}" ]]; then
-    [[ -z "BOLT_THEME_REPO_REF" ]] && BOLT_THEME_REPO_REF=master
-    [[ -z "BOLT_THEME_NAME" ]] && BOLT_THEME_NAME="theme"
-
-    dest=public/theme/$BOLT_THEME_NAME
-    rm -rf "$dest"
-    git clone "$BOLT_THEME_REPO" -b "$BOLT_THEME_REPO_REF" --depth 1 "$dest"
-    rm -rf "$dest/.git"
+        (cd "$dest"; git clone "$BOLT_THEME_REPO" -b "$BOLT_THEME_REPO_REF" .)
+    else
+        echo "BOLT_CONFIG_REPO not defined."
+    fi
 else
-    echo "BOLT_CONFIG_REPO not defined."
+    echo "Theme directory is already populated."
 fi
 
 if [[ "${SERVER_NAME:-}" ]]; then

@@ -40,20 +40,21 @@ prepare_dir() {
     mkdir -p "$dir"
     count="$(find "$dir" -mindepth 1 -maxdepth 1 | wc -l)"
     if [[ "$count" == 0 ]]; then
-    echo "$name directory is empty."
+        echo "$name directory is empty."
 
-    if [[ "${repo}" ]]; then
-        [[ -z "${ref}" ]] && ref=master
+        if [[ "${repo}" ]]; then
+            [[ -z "${ref}" ]] && ref=master
 
-        (cd "$dir"; git clone "$repo" -b "$ref" .)
+            (cd "$dir"; git clone "$repo" -b "$ref" .)
 
+        else
+            echo "$name repository is not defined."
+        fi
     else
-        echo "$name repository is not defined."
+        echo "$name directory is already populated."
+        (cd "$dir"; git show --quiet 2>/dev/null || true)
     fi
-else
-    echo "$name directory is already populated."
-    (cd "$dir"; git show --quiet 2>/dev/null || true)
-fi
+}
 
 prepare_dir App app "${BOLT_APP_REPO:-}" "${BOLT_APP_REPO_REF:-}"
 prepare_dir Config config "${BOLT_CONFIG_REPO:-}" "${BOLT_CONFIG_REPO_REF:-}"

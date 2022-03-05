@@ -30,42 +30,33 @@ APP_SECRET=${APP_SECRET}
 DATABASE_URL=${DATABASE_URL}
 EOF
 
+prepare_dir() {
+    name=$1; shift
+    dir=$1; shift
+    repo=$1; shift
+    ref=$1
 
-mkdir -p config
-config_count="$(find config -mindepth 1 -maxdepth 1 | wc -l)"
-if [[ "$config_count" == 0 ]]; then
-    echo "Config directory is empty."
 
-    if [[ "${BOLT_CONFIG_REPO:-}" ]]; then
-        [[ -z "BOLT_CONFIG_REPO_REF" ]] && BOLT_CONFIG_REPO_REF=master
+    mkdir -p "$dir"
+    count="$(find "$dir" -mindepth 1 -maxdepth 1 | wc -l)"
+    if [[ "$count" == 0 ]]; then
+    echo "$name directory is empty."
 
-        (cd config; git clone "$BOLT_CONFIG_REPO" -b "$BOLT_CONFIG_REPO_REF" .)
+    if [[ "${repo}" ]]; then
+        [[ -z "${ref}" ]] && ref=master
+
+        (cd "$dir"; git clone "$repo" -b "$ref" .)
 
     else
-        echo "BOLT_CONFIG_REPO not defined."
+        echo "$name repository is not defined."
     fi
 else
-    echo "Config directory is already populated."
-    (cd config; git show --quiet 2>/dev/null || true)
+    echo "$name directory is already populated."
+    (cd "$dir"; git show --quiet 2>/dev/null || true)
 fi
 
-[[ -z "BOLT_THEME_NAME" ]] && BOLT_THEME_NAME="theme"
-theme_dir=public/theme/$BOLT_THEME_NAME
-mkdir -p "$theme_dir"
-theme_count="$(find "${theme_dir}" -mindepth 1 -maxdepth 1 | wc -l)"
-if [[ "$theme_count" == 0 ]]; then
-    echo "Theme directory is empty."
-    if [[ "${BOLT_THEME_REPO:-}" ]]; then
-        [[ -z "BOLT_THEME_REPO_REF" ]] && BOLT_THEME_REPO_REF=master
-
-        (cd "$theme_dir"; git clone "$BOLT_THEME_REPO" -b "$BOLT_THEME_REPO_REF" .)
-    else
-        echo "BOLT_CONFIG_REPO not defined."
-    fi
-else
-    echo "Theme directory is already populated."
-    (cd "$theme_dir"; git show --quiet 2>/dev/null || true)
-fi
+prepare_dir Config config "${BOLT_CONFIG_REPO:-}" "${BOLT_CONFIG_REPO_REF:-}"
+prepare_dir Theme "public/theme/${BOLT_THEME_NAME:-theme}" "${BOLT_THEME_REPO:-}" "${BOLT_THEME_REPO_REF:-}"
 
 if ! bin/console bolt:list-users 2>/dev/null; then
     echo "No user configured. Create the database."

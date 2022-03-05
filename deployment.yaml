@@ -21,7 +21,7 @@ spec:
       - name: cnt
         # push to git@github.com:kpouget/boltcms-ubi.git
         # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
-        image: quay.io/kpouget/boltcms-ubi@sha256:0d5d9eafff051bf9b8896356aeb93167b537eb5017234ca35764a279408943e7
+        image: quay.io/kpouget/boltcms-ubi@sha256:db284141d441f0e7b7705a32c044984410749f4a70fba2e1a29cde1bb5d9faa6
         resources:
           requests:
             memory: "256Mi"
@@ -193,7 +193,7 @@ spec:
       #
 
       - name: db
-        image: docker.io/library/mariadb@sha256:db284141d441f0e7b7705a32c044984410749f4a70fba2e1a29cde1bb5d9faa6
+        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
         resources:
           requests:
             memory: "256Mi"

@@ -56,7 +56,7 @@ prepare_dir() {
     fi
 }
 
-prepare_dir App app "${BOLT_APP_REPO:-}" "${BOLT_APP_REPO_REF:-}"
+prepare_dir App public/app "${BOLT_APP_REPO:-}" "${BOLT_APP_REPO_REF:-}"
 prepare_dir Config config "${BOLT_CONFIG_REPO:-}" "${BOLT_CONFIG_REPO_REF:-}"
 prepare_dir Theme "public/theme/${BOLT_THEME_NAME:-theme}" "${BOLT_THEME_REPO:-}" "${BOLT_THEME_REPO_REF:-}"
 

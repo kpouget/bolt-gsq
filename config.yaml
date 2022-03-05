@@ -17,6 +17,9 @@ data:
   BOLT_CONFIG_REPO: "https://github.com/kpouget/gsq-k8s.git"
   BOLT_CONFIG_REPO_REF: bolt/config
 
+  BOLT_APP_REPO: "https://github.com/kpouget/gsq-k8s.git"
+  BOLT_APP_REPO_REF: bolt/app
+
   BOLT_THEME_REPO: "https://github.com/kpouget/gsq-k8s.git"
   BOLT_THEME_REPO_REF: bolt/theme
   BOLT_THEME_NAME: theme-gsq-solid-state

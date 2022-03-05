@@ -21,7 +21,7 @@ spec:
       - name: cnt
         # push to git@github.com:kpouget/boltcms-ubi.git
         # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
-        image: quay.io/kpouget/boltcms-ubi@sha256:82e2600d46a41059d42b8472e3d9a176bd9909474cb14218a7c1b8f84e838e0f
+        image: quay.io/kpouget/boltcms-ubi@sha256:0d5d9eafff051bf9b8896356aeb93167b537eb5017234ca35764a279408943e7
         resources:
           requests:
             memory: "256Mi"
@@ -135,6 +135,20 @@ spec:
 
         # ---
 
+        - name: BOLT_APP_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_APP_REPO
+
+        - name: BOLT_APP_REPO_REF
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_APP_REPO_REF
+
+        # ---
+
         - name: BOLT_THEME_REPO
           valueFrom:
             configMapKeyRef:
@@ -166,6 +180,8 @@ spec:
           name: config
         - mountPath: /opt/app-root/src/app-src/public/theme/theme-gsq-solid-state
           name: theme
+        - mountPath: /opt/app-root/src/app-src/public/app
+          name: app
         - mountPath: /opt/app-root/src/app-src/public/files
           name: files
         - mountPath: /opt/app-root/src/app-src/public/thumbs
@@ -219,6 +235,10 @@ spec:
           name: db
       restartPolicy: Always
       volumes:
+      - name: app
+        hostPath:
+          path: "/data/website/bolt/app"
+          type: DirectoryOrCreate
       - name: config
         hostPath:
           path: "/data/website/bolt/config"

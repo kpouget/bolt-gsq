@@ -31,7 +31,6 @@ metadata:
   namespace: website-bolt
 data:
   DATABASE_DRIVER: mysql
-  # don't use 'localhost': "A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost."
-  DATABASE_HOST: 127.0.0.1:3306
+  DATABASE_HOST: db.website-bolt.svc:3306
   DATABASE_NAME: bolt-gsq
   DATABASE_USER: bolt-gsq

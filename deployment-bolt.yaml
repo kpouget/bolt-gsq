@@ -188,78 +188,23 @@ spec:
           name: thumbs
         - mountPath: /opt/app-root/src/app-src/var
           name: var
-      #
-      # Database container
-      #
-
-      - name: db
-        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
-        resources:
-          requests:
-            memory: "256Mi"
-          limits:
-            memory: "256Mi"
-        args:
-        - --transaction-isolation=READ-COMMITTED
-        - --binlog-format=ROW
-        - --log-bin=mysqld-bin
-        - --skip-innodb-read-only-compressed
-        securityContext:
-          privileged: true
-        env:
-        - name: MYSQL_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: db
-              key: DATABASE_NAME
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db
-              key: DATABASE_PASSWORD
-        - name: MYSQL_USER
-          valueFrom:
-            configMapKeyRef:
-              name: db
-              key: DATABASE_USER
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db
-              key: DATABASE_ROOT_PASSWORD
-        ports:
-        - containerPort: 3306
-          protocol: TCP
-        volumeMounts:
-        - mountPath: /var/lib/mysql
-          name: db
       restartPolicy: Always
       volumes:
       - name: app
-        hostPath:
-          path: "/data/website/bolt/app"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: app
       - name: config
-        hostPath:
-          path: "/data/website/bolt/config"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: config
       - name: theme
-        hostPath:
-          path: "/data/website/bolt/theme"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: theme
       - name: files
-        hostPath:
-          path: "/data/website/bolt/files"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: files
       - name: thumbs
-        hostPath:
-          path: "/data/website/bolt/thumbs"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: thumbs
       - name: var
-        hostPath:
-          path: "/data/website/bolt/var"
-          type: DirectoryOrCreate
-      - name: db
-        hostPath:
-          path: "/data/website/db"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: var

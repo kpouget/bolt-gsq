@@ -1,0 +1,160 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: website-bolt-app
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/root/data/website/bolt/app"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app
+  namespace: website-bolt
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: website-bolt-app
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: website-bolt-config
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/root/data/website/bolt/config"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: website-bolt-config
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: website-bolt-theme
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/root/data/website/bolt/theme"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theme
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: website-bolt-theme
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: website-bolt-files
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/root/data/website/bolt/files"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: files
+  namespace: website-bolt
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: website-bolt-files
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: website-bolt-thumbs
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/root/data/website/bolt/thumbs"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thumbs
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: website-bolt-thumbs
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: website-bolt-var
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/root/data/website/bolt/var"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: var
+  namespace: website-bolt
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: website-bolt-var
+---

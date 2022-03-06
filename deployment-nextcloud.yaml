@@ -28,6 +28,14 @@ spec:
             memory: "256Mi"
         securityContext:
           privileged: true
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: html
+        - mountPath: /var/www/html/data
+          name: data
         env:
         - name: TZ
           valueFrom:
@@ -95,72 +103,12 @@ spec:
             configMapKeyRef:
               name: db
               key: MYSQL_USER
-
         # ---
-
-        ports:
-        - containerPort: 80
-          protocol: TCP
-        volumeMounts:
-        - mountPath: /var/www/html
-          name: html
-        - mountPath: /var/www/html/data
-          name: data
-      #
-      # Database container
-      #
-
-      - name: db
-        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
-        resources:
-          requests:
-            memory: "256Mi"
-          limits:
-            memory: "256Mi"
-        securityContext:
-          privileged: true
-        env:
-        - name: MYSQL_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: db
-              key: MYSQL_DATABASE
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db
-              key: MYSQL_PASSWORD
-        - name: MYSQL_USER
-          valueFrom:
-            configMapKeyRef:
-              name: db
-              key: MYSQL_USER
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db
-              key: MYSQL_ROOT_PASSWORD
-        args:
-        - --transaction-isolation=READ-COMMITTED
-        - --binlog-format=ROW
-        - --log-bin=mysqld-bin
-        - --skip-innodb-read-only-compressed
-        ports:
-        - containerPort: 3306
-          protocol: TCP
-        volumeMounts:
-        - mountPath: /var/lib/mysql
-          name: db
       volumes:
       - name: data
-        hostPath:
-          path: "/data/nextcloud/data"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: data
       - name: html
-        hostPath:
-          path: "/data/nextcloud/html"
-          type: DirectoryOrCreate
-      - name: db
-        hostPath:
-          path: "/data/nextcloud/db"
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: html
+

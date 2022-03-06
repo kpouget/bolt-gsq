@@ -19,6 +19,5 @@ metadata:
   namespace: nextcloud
 data:
   MYSQL_DATABASE: nextcloud
-  # don't use 'localhost': "A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost."
-  MYSQL_HOST: 127.0.0.1:3306 
+  MYSQL_HOST: db.nextcloud.svc:3306 
   MYSQL_USER: nextcloud

@@ -2,13 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nextcloud
-  namespace: nextcloud
 data:
   TZ: Europe/Paris
   DEBUG: "false"
-  NEXTCLOUD_URL: https://cloud.groupe-speleo-quercy.fr
+  NEXTCLOUD_URL: https://nextcloud-nextcloud.apps.kpouget-20220309.psap.aws.rhperfscale.org
   NEXTCLOUD_ADMIN_USER: admin
-  NEXTCLOUD_TRUSTED_DOMAINS: cloud.groupe-speleo-quercy.fr
+  NEXTCLOUD_TRUSTED_DOMAINS: nextcloud-nextcloud.apps.kpouget-20220309.psap.aws.rhperfscale.org
   NEXTCLOUD_UPLOAD_MAX_FILESIZE: 4G
   NEXTCLOUD_MAX_FILE_UPLOADS: "200"
 ---
@@ -16,8 +15,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: db
-  namespace: nextcloud
 data:
   MYSQL_DATABASE: nextcloud
-  MYSQL_HOST: db.nextcloud.svc:3306 
+  MYSQL_HOST: nextcloud-pod-0:3306
   MYSQL_USER: nextcloud

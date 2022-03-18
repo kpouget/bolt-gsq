@@ -4,7 +4,6 @@ metadata:
   labels:
     app: nc
   name: nextcloud
-  namespace: nextcloud
 spec:
   replicas: 1
   strategy:
@@ -30,6 +29,7 @@ spec:
           privileged: true
         ports:
         - containerPort: 80
+          hostPort: 8099
           protocol: TCP
         volumeMounts:
         - mountPath: /var/www/html
@@ -67,8 +67,8 @@ spec:
               key: NEXTCLOUD_TRUSTED_DOMAINS
         - name: NEXTCLOUD_ADMIN_PASSWORD
           valueFrom:
-            secretKeyRef:
-              name: nextcloud
+            configMapKeyRef:
+              name: nextcloud-secret
               key: NEXTCLOUD_ADMIN_PASSWORD
         - name: NEXTCLOUD_UPLOAD_MAX_FILESIZE
           valueFrom:
@@ -95,8 +95,8 @@ spec:
               key: MYSQL_HOST
         - name: MYSQL_PASSWORD
           valueFrom:
-            secretKeyRef:
-              name: db
+            configMapKeyRef:
+              name: db-secret
               key: MYSQL_PASSWORD
         - name: MYSQL_USER
           valueFrom:
@@ -104,11 +104,57 @@ spec:
               name: db
               key: MYSQL_USER
         # ---
+      - name: db
+        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
+        securityContext:
+          privileged: true
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_DATABASE
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: MYSQL_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: MYSQL_USER
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: MYSQL_ROOT_PASSWORD
+        args:
+        - --transaction-isolation=READ-COMMITTED
+        - --binlog-format=ROW
+        - --log-bin=mysqld-bin
+        - --skip-innodb-read-only-compressed
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db
       volumes:
       - name: data
-        persistentVolumeClaim:
-          claimName: data
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/nextcloud/data
+          type: Directory
       - name: html
-        persistentVolumeClaim:
-          claimName: html
-
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/nextcloud/html
+          type: Directory
+      - name: db
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/nextcloud/db
+          type: Directory

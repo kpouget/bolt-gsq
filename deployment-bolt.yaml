@@ -4,7 +4,6 @@ metadata:
   labels:
     app: website
   name: website
-  namespace: website-bolt
 spec:
   replicas: 1
   strategy:
@@ -21,14 +20,14 @@ spec:
       - name: cnt
         # push to git@github.com:kpouget/boltcms-ubi.git
         # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
-        image: quay.io/kpouget/boltcms-ubi@sha256:907fca029b7faf98610f4ab7fd06ed3cee2351188eb306c6785613884f6cee60
+        image: quay.io/kpouget/boltcms-ubi@sha256:c6205df2f0a0b7c8cfd07af3c9f986348661e2cf1d44cdecc63aab2890dd4417
         resources:
           requests:
             memory: "256Mi"
           limits:
             memory: "256Mi"
-        securityContext:
-          privileged: true
+        #securityContext:
+        #  privileged: true
         env:
         # ---
         - name: SERVER_NAME
@@ -53,8 +52,8 @@ spec:
 
         - name: ADMIN_PASSWORD
           valueFrom:
-            secretKeyRef:
-              name: bolt
+            configMapKeyRef:
+              name: bolt-secret
               key: ADMIN_PASSWORD
 
         - name: ADMIN_EMAIL
@@ -84,8 +83,8 @@ spec:
 
         - name: APP_SECRET
           valueFrom:
-            secretKeyRef:
-              name: bolt
+            configMapKeyRef:
+              name: bolt-secret
               key: APP_SECRET
 
         # ---
@@ -109,8 +108,8 @@ spec:
 
         - name: DATABASE_PASSWORD
           valueFrom:
-            secretKeyRef:
-              name: db
+            configMapKeyRef:
+              name: db-secret
               key: DATABASE_PASSWORD
 
         - name: DATABASE_NAME
@@ -169,6 +168,7 @@ spec:
 
         ports:
         - containerPort: 8080
+          hostPort: 8098
           protocol: TCP
         readinessProbe:
           tcpSocket:
@@ -188,23 +188,74 @@ spec:
           name: thumbs
         - mountPath: /opt/app-root/src/app-src/var
           name: var
+      - name: db
+        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
+        args:
+        - --transaction-isolation=READ-COMMITTED
+        - --binlog-format=ROW
+        - --log-bin=mysqld-bin
+        - --skip-innodb-read-only-compressed
+        securityContext:
+          privileged: true
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_NAME
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: DATABASE_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_USER
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: DATABASE_ROOT_PASSWORD
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db
       restartPolicy: Always
       volumes:
       - name: app
-        persistentVolumeClaim:
-          claimName: app
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/app
+          type: Directory
       - name: config
-        persistentVolumeClaim:
-          claimName: config
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/config
+          type: Directory
       - name: theme
-        persistentVolumeClaim:
-          claimName: theme
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/theme
+          type: Directory
       - name: files
-        persistentVolumeClaim:
-          claimName: files
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/files
+          type: Directory
       - name: thumbs
-        persistentVolumeClaim:
-          claimName: thumbs
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/thumbs
+          type: Directory
       - name: var
-        persistentVolumeClaim:
-          claimName: var
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/var
+          type: Directory
+      - name: db
+        hostpath:
+          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/db
+          type: Directory

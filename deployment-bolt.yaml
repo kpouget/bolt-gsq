@@ -186,7 +186,7 @@ spec:
           name: files
         - mountPath: /opt/app-root/src/app-src/public/thumbs:Z
           name: thumbs
-        - mountPath: /opt/app-root/src/app-src/var
+        - mountPath: /opt/app-root/src/app-src/var:Z
           name: var
       - name: db
         image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a

@@ -20,7 +20,8 @@ set -o nounset
 
 export DATABASE_URL=$DATABASE_DRIVER://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME
 
-sed -i 's/^\(APP_ENV\)=.*$/\1='$APP_ENV'/' .env
+ENV_CONTENT=$(cat .env)
+echo "$ENV_CONTENT" | sed 's/^\(APP_ENV\)=.*$/\1='$APP_ENV'/' > .env
 
 echo "APP_DEBUG=$APP_DEBUG" >> .env.${APP_ENV}.local
 cat <<EOF > .env.${APP_ENV}.local
@@ -52,7 +53,7 @@ prepare_dir() {
         fi
     else
         echo "$name directory is already populated."
-        (cd "$dir"; git show --quiet 2>/dev/null || true)
+        (cd "$dir"; git show --quiet 2>/dev/null | cat || true)
     fi
 }
 
@@ -75,6 +76,8 @@ if [[ "${SERVER_NAME:-}" ]]; then
 fi
 
 echo "Done with the configuration."
+
+chown default /opt/app-root/src/app-src/var/ -R
 
 php-fpm &
 

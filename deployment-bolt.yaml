@@ -20,7 +20,7 @@ spec:
       - name: cnt
         # push to git@github.com:kpouget/boltcms-ubi.git
         # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
-        image: quay.io/kpouget/boltcms-ubi@sha256:c6205df2f0a0b7c8cfd07af3c9f986348661e2cf1d44cdecc63aab2890dd4417
+        image: quay.io/kpouget/boltcms-ubi@sha256:82a1fdeb94aa49bfabcb3b8d421d99ec256f4e02cb7d44133660ad804f45cd13
         resources:
           requests:
             memory: "256Mi"

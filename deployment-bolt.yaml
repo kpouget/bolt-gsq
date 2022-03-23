@@ -176,15 +176,15 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 10
         volumeMounts:
-        - mountPath: /opt/app-root/src/app-src/config
+        - mountPath: /opt/app-root/src/app-src/config:Z
           name: config
-        - mountPath: /opt/app-root/src/app-src/public/theme/theme-gsq-solid-state
+        - mountPath: /opt/app-root/src/app-src/public/theme/theme-gsq-solid-state:Z
           name: theme
-        - mountPath: /opt/app-root/src/app-src/public/app
+        - mountPath: /opt/app-root/src/app-src/public/app:Z
           name: app
-        - mountPath: /opt/app-root/src/app-src/public/files
+        - mountPath: /opt/app-root/src/app-src/public/files:Z
           name: files
-        - mountPath: /opt/app-root/src/app-src/public/thumbs
+        - mountPath: /opt/app-root/src/app-src/public/thumbs:Z
           name: thumbs
         - mountPath: /opt/app-root/src/app-src/var
           name: var
@@ -227,7 +227,7 @@ spec:
         - containerPort: 3306
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/lib/mysql
+        - mountPath: /var/lib/mysql:Z
           name: db
       restartPolicy: Always
       volumes:

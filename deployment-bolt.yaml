@@ -233,23 +233,23 @@ spec:
       volumes:
       - name: app
         hostpath:
-          path: /data/website-bolt/app
+          path: /data/website/bolt/app
           type: Directory
       - name: config
         hostpath:
-          path: /data/website-bolt/config
+          path: /data/website/bolt/config
           type: Directory
       - name: theme
         hostpath:
-          path: /data/website-bolt/theme
+          path: /data/website/bolt/theme
           type: Directory
       - name: files
         hostpath:
-          path: /data/website-bolt/files
+          path: /data/website/bolt/files
           type: Directory
       - name: thumbs
         hostpath:
-          path: /data/website-bolt/thumbs
+          path: /data/website/bolt/thumbs
           type: Directory
       - name: var
         hostpath:

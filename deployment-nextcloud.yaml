@@ -148,13 +148,13 @@ spec:
       volumes:
       - name: data
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/nextcloud/data
+          path: /data/nextcloud/data
           type: Directory
       - name: html
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/nextcloud/html
+          path: /nextcloud/html
           type: Directory
       - name: db
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/nextcloud/db
+          path: /data/nextcloud/db
           type: Directory

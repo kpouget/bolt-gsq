@@ -1,8 +1,8 @@
 DB_FILENAME=../secrets/bolt_gsq.sql
-DATA_DIR=$(cat deployment-bolt.yaml | grep 'hostpath' -A1 -B1 | grep "name: files" -A2 | grep -v hostpath | grep path | cut -d: -f2)
+DATA_DIR=$(echo $(cat deployment-bolt.yaml | grep 'hostpath' -A1 -B1 | grep "name: files" -A2 | grep -v hostpath | grep path | cut -d: -f2))
 POD_NAME=website-pod-0-db
 
-PASS=$(cat secrets/secrets.yaml | grep DATABASE_PASSWORD | awk '{printf $2 }')
+PASS=$(cat ../secrets/secrets.yaml | grep DATABASE_PASSWORD | awk '{printf $2 }')
 
 podman exec -i $POD_NAME bash -c "mysql -u bolt-gsq -p$PASS bolt-gsq" <<< "SET FOREIGN_KEY_CHECKS=0;$(cat "$DB_FILENAME" | grep 'ALTER TABLE' | sed 's/ALTER TABLE/DROP TABLE IF EXISTS/' | sed 's/$/;/');SET FOREIGN_KEY_CHECKS=1;"
 
@@ -11,8 +11,8 @@ podman exec $POD_NAME bash -c "mysql -u bolt-gsq -p$PASS bolt-gsq -e 'SHOW table
 podman exec $POD_NAME bash -c "mysql -u bolt-gsq -p$PASS bolt-gsq -e 'SELECT * FROM bolt_user;'"
 
 
-if [ ! -d "$(ls $DATA_DIR)" ]; then
-  echo "WARNING: data directory doesn't exist"
+if [ ! -d "$DATA_DIR" ]; then
+  echo "WARNING: data directory '$DATA_DIR' doesn't exist"
 
 elif [ -z "$(ls $DATA_DIR)" ]; then
   (cd "$DATA_DIR"; git clone https://lab.0x972.info/gsq/files.git .)

@@ -152,7 +152,7 @@ spec:
           type: Directory
       - name: html
         hostpath:
-          path: /nextcloud/html
+          path: /data/nextcloud/html
           type: Directory
       - name: db
         hostpath:

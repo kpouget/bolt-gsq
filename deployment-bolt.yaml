@@ -233,29 +233,29 @@ spec:
       volumes:
       - name: app
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/app
+          path: /data/website-bolt/data/bolt/app
           type: Directory
       - name: config
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/config
+          path: /data/website-bolt/data/bolt/config
           type: Directory
       - name: theme
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/theme
+          path: /data/website-bolt/data/bolt/theme
           type: Directory
       - name: files
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/files
+          path: /data/website-bolt/data/bolt/files
           type: Directory
       - name: thumbs
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/thumbs
+          path: /data/website-bolt/data/bolt/thumbs
           type: Directory
       - name: var
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/var
+          path: /data/website-bolt/data/bolt/var
           type: Directory
       - name: db
         hostpath:
-          path: /home/kevin/vayrac/gsq/website-bolt/data/bolt/db
+          path: /data/website-bolt/data/bolt/db
           type: Directory

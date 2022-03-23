@@ -1,5 +1,5 @@
 DB_FILENAME=../secrets/bolt_gsq.sql
-DATA_DIR=../../data/bolt/files
+DATA_DIR=$(cat deployment-bolt.yaml | grep 'hostpath' -A1 -B1 | grep "name: files" -A2 | grep -v hostpath | grep path | cut -d: -f2)
 POD_NAME=website-pod-0-db
 
 PASS=$(cat secrets/secrets.yaml | grep DATABASE_PASSWORD | awk '{printf $2 }')

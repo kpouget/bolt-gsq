@@ -32,9 +32,9 @@ spec:
           hostPort: 8099
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/www/html
+        - mountPath: /var/www/html:Z
           name: html
-        - mountPath: /var/www/html/data
+        - mountPath: /var/www/html/data:Z
           name: data
         env:
         - name: TZ
@@ -143,7 +143,7 @@ spec:
         - containerPort: 3306
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/lib/mysql
+        - mountPath: /var/lib/mysql:Z
           name: db
       volumes:
       - name: data

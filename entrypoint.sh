@@ -3,6 +3,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
+# cannot 'set -x' because of passwords ...
 
 [[ -z "${ADMIN_USERNAME:-}" ]] && echo "ADMIN_USERNAME missing"
 [[ -z "${ADMIN_NAME:-}" ]] && echo "ADMIN_NAME missing"

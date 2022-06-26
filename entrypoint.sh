@@ -19,6 +19,8 @@ set -o nounset
 [[ -z "${DATABASE_NAME:-}" ]] && echo "DATABASE_NAME missing"
 [[ -z "${DATABASE_DRIVER:-}" ]] && echo "DATABASE_DRIVER missing"
 
+PHP_UPLOAD_MAX_FILESIZE=${PHP_UPLOAD_MAX_FILESIZE:-10M}
+
 export DATABASE_URL=$DATABASE_DRIVER://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME
 
 ENV_CONTENT=$(cat .env)
@@ -80,6 +82,8 @@ echo "Done with the configuration."
 
 chown -R default /opt/app-root/src/app-src/{var,config}/
 chown -R default /opt/app-root/src/app-src/public/{files,thumbs}/
+
+sed 's/upload_max_filesize =.*/upload_max_filesize = '$PHP_UPLOAD_MAX_FILESIZE''/ -i /etc/php.ini
 
 php-fpm &
 

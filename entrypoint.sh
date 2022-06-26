@@ -78,7 +78,8 @@ fi
 
 echo "Done with the configuration."
 
-chown default /opt/app-root/src/app-src/var/ -R
+chown -R default /opt/app-root/src/app-src/{var,config}/
+chown -R default /opt/app-root/src/app-src/public/{files,thumbs}/
 
 php-fpm &
 

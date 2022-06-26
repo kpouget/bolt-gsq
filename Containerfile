@@ -1,7 +1,8 @@
 FROM registry.access.redhat.com/ubi8/php-74:1-47
 
 # https://packagist.org/packages/bolt/project
-ENV BOLT_PROJECT_VERSION 1.4.2
+ENV BOLT_PROJECT_VERSION 2.3.10
+
 
 CMD bash /entrypoint.sh
 

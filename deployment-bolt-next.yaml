@@ -1,0 +1,262 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: website
+  name: website-next
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: website
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+      - name: cnt
+        # push to git@github.com:kpouget/boltcms-ubi.git
+        # https://quay.io/repository/kpouget/boltcms-ubi?tab=tags
+        image: quay.io/kpouget/boltcms-ubi@sha256:82a1fdeb94aa49bfabcb3b8d421d99ec256f4e02cb7d44133660ad804f45cd13
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
+        #securityContext:
+        #  privileged: true
+        env:
+        # ---
+        - name: SERVER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: SERVER_NAME
+
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: TZ
+
+        # ---
+
+        - name: ADMIN_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: ADMIN_USERNAME
+
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: bolt-secret
+              key: ADMIN_PASSWORD
+
+        - name: ADMIN_EMAIL
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: ADMIN_EMAIL
+
+        - name: ADMIN_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: ADMIN_NAME
+        # ---
+
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: APP_ENV
+
+        - name: APP_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: APP_DEBUG
+
+        - name: APP_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: bolt-secret
+              key: APP_SECRET
+
+        # ---
+        - name: DATABASE_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_DRIVER
+
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_NEXT_HOST
+
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_USER
+
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: DATABASE_PASSWORD
+
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_NAME
+
+        # ---
+
+        - name: BOLT_CONFIG_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_CONFIG_REPO
+
+        - name: BOLT_CONFIG_REPO_REF
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_CONFIG_REPO_REF
+
+        # ---
+
+        - name: BOLT_APP_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_APP_REPO
+
+        - name: BOLT_APP_REPO_REF
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_APP_REPO_REF
+
+        # ---
+
+        - name: BOLT_THEME_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_THEME_REPO
+
+        - name: BOLT_THEME_REPO_REF
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_THEME_REPO_REF
+
+        - name: BOLT_THEME_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bolt
+              key: BOLT_THEME_NAME
+
+        ports:
+        - containerPort: 8080
+          hostPort: 8088
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /opt/app-root/src/app-src/config:Z
+          name: config
+        - mountPath: /opt/app-root/src/app-src/public/theme/theme-gsq-solid-state:Z
+          name: theme
+        - mountPath: /opt/app-root/src/app-src/public/app:Z
+          name: app
+        - mountPath: /opt/app-root/src/app-src/public/files:Z
+          name: files
+        - mountPath: /opt/app-root/src/app-src/public/thumbs:Z
+          name: thumbs
+        - mountPath: /opt/app-root/src/app-src/var:Z
+          name: var
+      - name: db
+        image: docker.io/library/mariadb@sha256:6aede9b2573833b2271f413ae12268796499fdaa5073681f9902f5ab2c60b84a
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "256Mi"
+        args:
+        - --transaction-isolation=READ-COMMITTED
+        - --binlog-format=ROW
+        - --log-bin=mysqld-bin
+        - --skip-innodb-read-only-compressed
+        securityContext:
+          privileged: true
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_NAME
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: DATABASE_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db
+              key: DATABASE_USER
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret
+              key: DATABASE_ROOT_PASSWORD
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql:Z
+          name: db
+      restartPolicy: Always
+      volumes:
+      - name: app
+        hostpath:
+          path: /data/website-next/bolt/app
+          type: Directory
+      - name: config
+        hostpath:
+          path: /data/website-next/bolt/config
+          type: Directory
+      - name: theme
+        hostpath:
+          path: /data/website-next/bolt/theme
+          type: Directory
+      - name: files
+        hostpath:
+          path: /data/website-next/bolt/files
+          type: Directory
+      - name: thumbs
+        hostpath:
+          path: /data/website-next/bolt/thumbs
+          type: Directory
+      - name: var
+        hostpath:
+          path: /data/website-next/bolt/var
+          type: Directory
+      - name: db
+        hostpath:
+          path: /data/website-next/db
+          type: Directory
+

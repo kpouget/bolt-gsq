@@ -30,5 +30,6 @@ metadata:
 data:
   DATABASE_DRIVER: mysql
   DATABASE_HOST: website-pod-0:3306
+  DATABASE_NEXT_HOST: website-next-pod-0:3306
   DATABASE_NAME: bolt-gsq
   DATABASE_USER: bolt-gsq

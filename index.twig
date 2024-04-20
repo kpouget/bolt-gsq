@@ -15,15 +15,15 @@
 
 {% block content %}
 
-    {% setcontent lastThreePages = 'pages' earliest limit 3 %}
-    {% for page in lastThreePages %}
+    {% setcontent lastPages = 'pages' earliest limit 10 %}
+    {% for page in lastPages %}
         <!-- Loop {{ loop.index }} -->
         <section id="{% if loop.first %}one{% elseif loop.index == 2 %}two{% else %}three{% endif %}"
                  class="wrapper {% if loop.index % 2 == 0%}alt {% endif %}spotlight style{{ loop.index }}">
                 <div class="inner">
                     {% if page|link is not empty %}
                     <a href="{{ page|link }}" class="image">
-                      <img src="{{ thumbnail(page.image, 276, 276) }}" title="Photo: Philippe Tyssandier">
+                      <img src="{{ thumbnail(page.image, 500, 500) }}" title="Photo: Philippe Tyssandier">
                     </a>
                     {% endif %}
                     <div class="content">

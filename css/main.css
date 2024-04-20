@@ -3455,7 +3455,7 @@ body.is-menu-visible #menu .inner {
     opacity: 1;
     font-family: Raleway, Helvetica, sans-serif;
     font-size: 1em;
-    font-weight: 200;
+    font-weight: bold;
     letter-spacing: 0.1em;
     line-height: 2;
     text-transform: uppercase;
@@ -3562,15 +3562,19 @@ body.is-preload #banner p {
     font-size: 2em;
     margin-bottom: 0.8em;
     padding-bottom: 0.4em;
+    text-shadow: #000 1px 0 10px;
 }
 
 #wrapper > header p {
     font-family: Raleway, Helvetica, sans-serif;
     font-size: 1em;
-    font-weight: 200;
+    font-weight: bold;
     letter-spacing: 0.1em;
     line-height: 2;
     text-transform: uppercase;
+    background-color: #171716;
+    border-radius: 20px;
+    text-align: center;
 }
 
 @media screen and (max-width: 4000px) {
@@ -3584,6 +3588,8 @@ body.is-preload #banner p {
         background-position: center,
                              0% 30%;
         margin-bottom: -6.5em;
+        background-repeat: no-repeat;
+        background-size: 100%;
     }
 
 
@@ -3683,7 +3689,7 @@ body.is-preload #banner p {
 }
 
 .wrapper .inner {
-    padding: 3em 0 1em 0 ;
+    //padding: 3em 0 1em 0 ;
     margin: 0 auto;
     width: 55em;
 }

@@ -36,28 +36,4 @@
             </section>
 
     {% endfor %}
-{#
-    {% setcontent page = 'page/les-actions-du-club' %}
-    <!-- Four -->
-        <section id="four" class="wrapper alt style1">
-          <div class="inner">
-            <h2 class="major"><a href="{{ page|link }}">{{ page.title }}</a></h2>
-                <p>{{ page.teaser }}</p>
-                <section class="features">
-                    {% for entry in page|related %}
-                        <article>
-                            <a class="image"><img src="{{ entry.image|thumbnail(572, 333, "c") }}" alt="" /></a>
-                            <h3 class="major">{{ entry.title }}</h3>
-                            <p>{{ entry.teaser }}</p>
-                            <a href="{{ entry|link }}" class="special">Par ici</a>
-                        </article>
-                    {% endfor %}
-
-                </section>
-                <ul class="actions">
-                    <li><a href="/pages" class="button">Tout voir...</a></li>
-                </ul>
-            </div>
-            </section>
-            #}
 {% endblock content %}

@@ -14,16 +14,14 @@ groups:
     slug: groups
     singular_slug: group
     behaves_like: grouping
-    options: { main: "The main group", meta: "Meta group", other: "The other stuff" }
+    options: 
+        page: "Page principale"
+        activities: "Activité club"
+        exceptionnelle: "Sortie exceptionnelle"
+        classique: "Cavités classiques"
+        locale: "Cavités locales"
+        privee: "Cavités non publiques"
     has_sortorder: true
     required: false
 
-categories:
-    name: Categories
-    slug: categories
-    singular_name: Category
-    singular_slug: category
-    behaves_like: categories
-    multiple: true
-    options: [ news, events, movies, music, books, life, love, fun ]
-    required: false
+

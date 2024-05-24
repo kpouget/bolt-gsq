@@ -29,7 +29,11 @@
                     <div class="content">
                         <h2 class="major"><a href="{{ page|link }}">{{ page.title }}</a></h2>
                         <p>{{ page.teaser }}</p>
-                        <a href="{{ page|link }}" class="special">Par ici</a>
+                        {# <a href="{{ page|link }}" class="special">Plus d'infos</a> #}
+
+                        {% for entry in page|related %}
+                            &nbsp;•&nbsp;<span><a href="{{ entry|link }}" title="{{ entry.teaser }}" style="white-space: nowrap;">{{ entry.title }}</a></span> 
+                        {% endfor %}
                     </div>
                     </div>
 

@@ -15,7 +15,7 @@
 
 <header>
     <div class="inner">
-        <h2>{{ record.title }}</h2>
+        <h2><a href="/" title="Retour à la page d'accueil">{{ record.title }}</a></h2>
         <p>{{ record.teaser }}</p>
     </div>
 </header>
@@ -29,7 +29,7 @@
             <section class="features">
                 {% for image in record.gallery %}
                     <article>
-                        <a class="image" href="{{ image }}"><img src="{{ image|thumbnail(572, 333) }}" alt="" /></a>
+                        <a class="image" href="{{ image }}"><img src="{{ image|thumbnail(800, 800) }}" alt="" /></a>
                         <h3 class="major">{{ image.alt }}</h3>
                     </article>
                 {% endfor %}

@@ -3009,6 +3009,9 @@ button:disabled,
     border-radius: 5px;
     margin: 1.5em 3em 1.5em 0;
     width: calc(50% - 1.5em);
+
+    display: flex;
+    flex-direction: column;
 }
 
 .features article:nth-child(2n) {
@@ -3023,6 +3026,18 @@ button:disabled,
     margin-top: -1.75em;
     position: relative;
     width: calc(100% + 3.5em);
+}
+
+.features article p {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+}
+
+.features article h3 {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
 }
 
 .features article .image img {

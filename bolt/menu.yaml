@@ -6,11 +6,6 @@ main:
       title: Retour à la page principale.
       path: /
       class: first
-    - label: Quelques Photos
-      path: /page/quelques-photos
-    - label: Le GSQ
-      path: /page/le-gsq
-
     - label: Espace membres
       path: https://cloud.groupe-speleo-quercy.fr/
     - label: Nous contacter
